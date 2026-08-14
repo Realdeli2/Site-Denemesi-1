@@ -48,16 +48,16 @@ header h1 {
   color: #000;
 }
 
-/* SEKME İÇERİĞİ GİZLE/GÖSTER */
+/* SEKME GİZLEME KESİN ÇÖZÜMÜ */
 .tab-content {
-  display: none;
+  display: none !important;
 }
 
 .tab-content.active {
-  display: block;
+  display: block !important;
 }
 
-/* ARAMA / FİLTRE */
+/* ARAMA VE FİLTRE */
 .controls {
   display: flex;
   justify-content: center;
@@ -304,4 +304,4 @@ header h1 {
 
 .btn-rest:hover {
   background: #219150;
-  }
+}
