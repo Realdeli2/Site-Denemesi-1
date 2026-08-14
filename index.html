@@ -1,15 +1,32 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ömür'ün İlk Sitesi</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HALISAHA FC 26 - Kadro</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <h1>MERHABA!</h1>
-    <h2>Ömür'ün ilk web sitesi</h2>
-    <p>GitHub Pages çalışıyor.</p>
+  <header>
+    <h1>HALISAHA FC 26</h1>
+    <div class="controls">
+      <input type="text" id="searchInput" placeholder="Oyuncu ara...">
+      <select id="posFilter">
+        <option value="ALL">Tüm Pozisyonlar</option>
+        <option value="GK">GK (Kaleci)</option>
+        <option value="CB">CB (Stoper)</option>
+        <option value="RB">RB (Sağ Bek)</option>
+        <option value="CAM">CAM (Ofansif OS)</option>
+        <option value="ST">ST (Forvet)</option>
+      </select>
+    </div>
+  </header>
 
+  <main class="card-container" id="cardContainer">
+    <!-- Kartlar JavaScript ile buraya eklenecek -->
+  </main>
+
+  <script src="script.js"></script>
 </body>
 </html>
