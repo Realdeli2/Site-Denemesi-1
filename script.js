@@ -13,16 +13,28 @@ const players = [
   { id: "player_011", name: "Bekir Akdoğan", pos: "ST", ovr: 65, energy: 100, xp: 0, level: 1, playstyle: "Finesse Shot+", stats: { PAC: 52, SHO: 82, PAS: 48, DRI: 62, DEF: 32, PHY: 42 } }
 ];
 
-// SEKME DEĞİŞTİRME FONKSİYONU (TIKLAMA İŞLEVİ)
-function switchTab(tabName) {
-  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+// SEKME GEÇİŞİ İÇİN OLAY DİNLEYİCİ
+function initTabs() {
+  const navButtons = document.querySelectorAll('.nav-btn');
   
-  document.getElementById(`tab-${tabName}`).classList.add('active');
-  event.target.classList.add('active');
+  navButtons.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const targetTab = e.target.getAttribute('data-tab');
+
+      // Aktif buton görselini değiştir
+      navButtons.forEach(b => b.classList.remove('active'));
+      e.target.classList.add('active');
+
+      // Aktif sekme ekranını değiştir
+      document.querySelectorAll('.tab-content').forEach(section => {
+        section.classList.remove('active');
+      });
+      document.getElementById(`tab-${targetTab}`).classList.add('active');
+    });
+  });
 }
 
-// 1. KARTLARI ÇİZME (KARTLAR SEKMESİ)
+// 1. KARTLARI ÇİZME
 function renderCards(data) {
   const container = document.getElementById('cardContainer');
   if (!container) return;
@@ -105,11 +117,11 @@ function trainPlayer(playerId, statKey) {
     if (p.xp >= 100) {
       p.level += 1;
       p.xp -= 100;
-      p.ovr += 1; // Seviye atlayınca Reyting +1 artar
+      p.ovr += 1;
     }
 
     renderTraining();
-    renderCards(players); // Kartlar sekmesini de anlık güncelle
+    renderCards(players);
   }
 }
 
@@ -124,7 +136,7 @@ function restPlayer(playerId) {
   }
 }
 
-// ARAMA VE FİLTRELEME İŞLEVİ
+// ARAMA VE FİLTRELEME
 function filterData() {
   const query = document.getElementById('searchInput').value.toLowerCase();
   const selectedPos = document.getElementById('posFilter').value;
@@ -138,12 +150,13 @@ function filterData() {
   renderCards(filtered);
 }
 
-// SAYFA YÜKLENDİĞİNDE ÇALIŞACAK TETİKLEYİCİLER
+// SAYFA İLK YÜKLENDİĞİNDE ÇALIŞACAK KODLAR
 document.addEventListener("DOMContentLoaded", () => {
   renderCards(players);
   renderTraining();
+  initTabs(); // Sekme geçişlerini aktif eder
 
   document.getElementById('searchInput').addEventListener('input', filterData);
   document.getElementById('posFilter').addEventListener('change', filterData);
 });
-   
+    
