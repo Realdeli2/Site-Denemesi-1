@@ -10,15 +10,15 @@
 
   <header>
     <h1>PELİTLİBAĞ FC 26</h1>
-    <!-- SEKMELER -->
     <nav class="main-nav">
-      <button class="nav-btn active" data-tab="cards">🃏 Kartlar</button>
+      <button class="nav-btn active" data-tab="cards">🛡️ Kadro</button>
+      <button class="nav-btn" data-tab="lineup">⭐ İlk 4 & Kimya</button>
       <button class="nav-btn" data-tab="training">🏋️ Tesisler</button>
       <button class="nav-btn" data-tab="matches">⚽ Maçlar</button>
     </nav>
   </header>
 
-  <!-- SEKME 1: KARTLAR -->
+  <!-- KADRO SEKMESİ -->
   <section id="tab-cards" class="tab-content active">
     <div class="controls">
       <input type="text" id="searchInput" placeholder="Oyuncu ara...">
@@ -34,7 +34,16 @@
     <main class="card-container" id="cardContainer"></main>
   </section>
 
-  <!-- SEKME 2: ANTRENMAN TESİSLERİ -->
+  <!-- İLK 4 VE KİMYA SEKMESİ -->
+  <section id="tab-lineup" class="tab-content">
+    <div class="training-header">
+      <h2>⭐ İLK 4 VE TAKIM KİMYASI</h2>
+      <p id="chemistryDisplay">Takım Kimyası Hesaplanıyor...</p>
+    </div>
+    <div id="lineupContainer" class="lineup-field"></div>
+  </section>
+
+  <!-- ANTRENMAN TESİSLERİ -->
   <section id="tab-training" class="tab-content">
     <div class="training-header">
       <h2>🏋️ ANTRENMAN TESİSLERİ</h2>
@@ -43,19 +52,34 @@
     <div id="trainingContainer" class="training-grid"></div>
   </section>
 
-  <!-- SEKME 3: MAÇLAR -->
+  <!-- MAÇLAR SEKMESİ -->
   <section id="tab-matches" class="tab-content">
     <div class="training-header">
       <h2>⚽ MAÇ MERKEZİ</h2>
-      <p>Takımını maça çıkar, galibiyet serisi yakala!</p>
+      <p>Takımını maça çıkar, canlı simülasyonu başlat!</p>
     </div>
     <div style="text-align: center; margin-top: 30px;">
-      <button class="btn-rest" onclick="playMatch()" style="padding: 15px 30px; font-size: 1.1rem;">Maç Yap (Simülasyon)</button>
-      <div id="matchResult" style="margin-top: 20px; font-size: 1.2rem; color: #e5b350;"></div>
+      <button class="btn-rest" onclick="openMatchModal()" style="padding: 15px 30px; font-size: 1.1rem;">Maçı Başlat</button>
     </div>
   </section>
 
+  <!-- MAÇ SİMÜLASYON PENCERESİ (MODAL) -->
+  <div id="matchModal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="match-scoreboard">
+        <span id="matchMinute">0'</span>
+        <div class="score-box">
+          <span id="teamHomeName">Pelitlibağ FC</span> 
+          <span id="homeGoals">0</span> - <span id="awayGoals">0</span> 
+          <span id="teamAwayName">Rakip FK</span>
+        </div>
+      </div>
+      <div id="matchCommentary" class="match-commentary">Maç başlamak üzere...</div>
+      <button id="closeMatchBtn" class="btn-train" style="display:none; margin: 20px auto 0; padding: 10px 20px;" onclick="closeMatchModal()">Maçı Kapat</button>
+    </div>
+  </div>
+
   <script src="script.js"></script>
 </body>
-                                         </html>
-                                         
+  </html>
+      
