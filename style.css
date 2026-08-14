@@ -147,3 +147,59 @@ header h1 {
   border-radius: 4px;
   font-weight: 600;
     }
+/* Sekme Navigasyonu */
+.main-nav {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 25px;
+}
+
+.nav-btn {
+  background: #1a1f29;
+  color: #fff;
+  border: 1px solid #333;
+  padding: 12px 24px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.3s;
+}
+
+.nav-btn.active, .nav-btn:hover {
+  background: #e5b350;
+  color: #000;
+}
+
+/* Kilitli Oyuncu Kartı Stili */
+.fc-card.locked {
+  filter: grayscale(0.9);
+  opacity: 0.6;
+  position: relative;
+}
+
+.fc-card.locked::after {
+  content: "🔒 KİLİTLİ";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0,0,0,0.85);
+  color: #e5b350;
+  padding: 8px 15px;
+  border-radius: 5px;
+  font-weight: bold;
+}
+
+/* Saha Görünümü */
+.pitch {
+  background: #2e7d32;
+  border: 3px solid #fff;
+  border-radius: 12px;
+  height: 450px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  align-items: center;
+  padding: 20px;
+}
