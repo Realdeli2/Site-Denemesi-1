@@ -86,4 +86,31 @@ const players = [
       
 // Sayfa yüklendiğinde kartları bas
 renderCards(players);
-   
+   // Antrenman Yaptırma Fonksiyonu
+function trainPlayer(playerId, statToImprove) {
+  const player = players.find(p => p.id === playerId);
+  
+  if (!player || player.isLocked) return;
+  
+  if (player.energy >= 20) {
+    player.stats[statToImprove] += 1; // İstatistiği artır
+    player.energy -= 20;              // Enerjiyi düşür
+    
+    // Genel Reytingi Yeniden Hesapla
+    updateOverallRating(player);
+    alert(`${player.name} oyuncusunun ${statToImprove} değeri +1 arttı!`);
+    renderTraining();
+  } else {
+    alert("Oyuncunun enerjisi çok düşük! Dinlendirmelisin.");
+  }
+}
+
+// Sekme Geçiş Fonksiyonu
+function switchTab(tabName) {
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+  
+  document.getElementById(`tab-${tabName}`).classList.add('active');
+  event.target.classList.add('active');
+}
+
