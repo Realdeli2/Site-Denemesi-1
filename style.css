@@ -24,19 +24,19 @@ header h1 {
   text-transform: uppercase;
 }
 
-/* SEKME DÜĞMELERİ */
 .main-nav {
   display: flex;
   justify-content: center;
   gap: 10px;
   margin-bottom: 20px;
+  flex-wrap: wrap;
 }
 
 .nav-btn {
   background: #1a1f29;
   color: #fff;
   border: 1px solid #333;
-  padding: 12px 24px;
+  padding: 12px 20px;
   border-radius: 8px;
   cursor: pointer;
   font-weight: 700;
@@ -48,7 +48,6 @@ header h1 {
   color: #000;
 }
 
-/* SEKME GİZLEME KESİN ÇÖZÜMÜ */
 .tab-content {
   display: none !important;
 }
@@ -57,7 +56,6 @@ header h1 {
   display: block !important;
 }
 
-/* ARAMA VE FİLTRE */
 .controls {
   display: flex;
   justify-content: center;
@@ -76,7 +74,6 @@ header h1 {
   outline: none;
 }
 
-/* KART DİZİLİMİ */
 .card-container {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -90,11 +87,6 @@ header h1 {
   border-radius: 16px;
   padding: 3px;
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
-  transition: transform 0.2s ease;
-}
-
-.fc-card:hover {
-  transform: translateY(-5px);
 }
 
 .card-inner {
@@ -176,7 +168,6 @@ header h1 {
   font-weight: 600;
 }
 
-/* ANTRENMAN EKRANI */
 .training-header {
   text-align: center;
   margin-bottom: 25px;
@@ -193,7 +184,7 @@ header h1 {
 
 .training-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 20px;
   max-width: 1200px;
   margin: 0 auto;
@@ -206,89 +197,61 @@ header h1 {
   padding: 15px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 }
 
 .t-card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #e5b350;
   border-bottom: 1px solid #2a3142;
   padding-bottom: 8px;
 }
 
-.t-name {
-  font-weight: 700;
-  font-size: 1rem;
+.sub-train-item {
+  background: #1a1f29;
+  padding: 10px;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border: 1px solid #252d3d;
 }
 
-.t-badge {
-  background: #e5b350;
-  color: #000;
-  padding: 2px 6px;
+.sub-train-title {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.train-controls {
+  display: flex;
+  gap: 8px;
+}
+
+.train-controls select {
+  flex: 1;
+  background: #0b0e14;
+  color: #fff;
+  border: 1px solid #444;
+  padding: 5px;
   border-radius: 4px;
-  font-weight: 800;
   font-size: 0.8rem;
 }
 
-.bar-container {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-}
-
-.bar-label {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.75rem;
-  color: #aaa;
-}
-
-.progress-bg {
-  background: #0b0e14;
-  height: 8px;
-  border-radius: 4px;
-  overflow: hidden;
-}
-
-.progress-fill-energy {
-  background: linear-gradient(90deg, #e74c3c, #2ecc71);
-  height: 100%;
-}
-
-.progress-fill-xp {
-  background: #3498db;
-  height: 100%;
-}
-
-.stat-buttons {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 6px;
-  margin-top: 5px;
-}
-
 .btn-train {
-  background: #1a1f29;
-  border: 1px solid #e5b350;
-  color: #e5b350;
-  padding: 6px;
-  border-radius: 5px;
+  background: #e5b350;
+  color: #000;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
   font-weight: 700;
   cursor: pointer;
   font-size: 0.8rem;
 }
 
-.btn-train:hover:not(:disabled) {
-  background: #e5b350;
-  color: #000;
-}
-
 .btn-train:disabled {
-  opacity: 0.3;
+  opacity: 0.4;
   cursor: not-allowed;
-  border-color: #555;
-  color: #555;
 }
 
 .btn-rest {
@@ -299,9 +262,14 @@ header h1 {
   border-radius: 5px;
   font-weight: 700;
   cursor: pointer;
-  margin-top: 5px;
 }
 
 .btn-rest:hover {
   background: #219150;
 }
+
+.timer-text {
+  font-size: 0.8rem;
+  color: #3498db;
+  font-weight: 600;
+  }
