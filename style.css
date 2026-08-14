@@ -168,6 +168,49 @@ header h1 {
   font-weight: 600;
 }
 
+/* İLK 4 SAHA GÖRÜNÜMÜ */
+.lineup-field {
+  max-width: 600px;
+  margin: 0 auto;
+  background: linear-gradient(180deg, #1b4d3e 0%, #113328 100%);
+  border: 2px solid #e5b350;
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: center;
+}
+
+.lineup-row {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  width: 100%;
+}
+
+.lineup-player-card {
+  background: #141824;
+  border: 1px solid #e5b350;
+  border-radius: 8px;
+  padding: 10px 15px;
+  text-align: center;
+  min-width: 130px;
+}
+
+.lp-name {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.lp-ovr {
+  font-size: 0.95rem;
+  color: #e5b350;
+  font-weight: 800;
+}
+
+/* ANTRENMAN TESİSLERİ */
 .training-header {
   text-align: center;
   margin-bottom: 25px;
@@ -272,4 +315,55 @@ header h1 {
   font-size: 0.8rem;
   color: #3498db;
   font-weight: 600;
+}
+
+/* MAÇ MODAL PENCERE */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.85);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: #141824;
+  border: 2px solid #e5b350;
+  border-radius: 12px;
+  padding: 25px;
+  width: 90%;
+  max-width: 500px;
+  text-align: center;
+}
+
+.match-scoreboard {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #e5b350;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.score-box {
+  background: #0b0e14;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #333;
+}
+
+.match-commentary {
+  background: #1a1f29;
+  padding: 15px;
+  border-radius: 8px;
+  min-height: 80px;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  color: #ddd;
+  text-align: left;
+  border: 1px solid #2a3142;
   }
+  
