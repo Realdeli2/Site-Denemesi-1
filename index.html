@@ -22,14 +22,13 @@
       height: 100vh;
     }
 
-    /* Tam Ekran / Yatay Başlangıç Kilit Ekranı */
+    /* Başlangıç Ekranı */
     #startLockScreen {
       position: fixed;
       top: 0; left: 0; width: 100vw; height: 100vh;
       background: #0f141d;
       z-index: 99999;
       display: flex;
-      flex-direction: column;
       justify-content: center;
       align-items: center;
       text-align: center;
@@ -38,15 +37,14 @@
     .start-box {
       background: var(--panel-bg);
       border: 2px solid var(--accent-color);
-      padding: 40px;
-      border-radius: 15px;
-      max-width: 450px;
+      padding: 30px;
+      border-radius: 12px;
+      width: 400px;
       box-shadow: 0 10px 30px rgba(0,0,0,0.8);
     }
-    .start-box h1 { color: var(--accent-color); margin-bottom: 15px; font-size: 1.8rem; }
-    .start-box p { color: #8b949e; margin-bottom: 25px; font-size: 0.95rem; line-height: 1.4; }
+    .start-box h1 { color: var(--accent-color); margin-bottom: 15px; font-size: 1.6rem; }
+    .start-box p { color: #8b949e; margin-bottom: 20px; font-size: 0.9rem; }
 
-    /* Modaller ve Arayüz */
     .modal-overlay {
       position: fixed;
       top: 0; left: 0; width: 100vw; height: 100vh;
@@ -173,12 +171,12 @@
 </head>
 <body>
 
-  <!-- İlk Açılış ve Tam Ekran / Yatay Mod Kilitleme Ekranı -->
+  <!-- İlk Açılış Ekranı (Butona basınca direkt tam ekran ve oyun açılır) -->
   <div id="startLockScreen">
     <div class="start-box">
       <h1>Pelitlibağ FK Kariyer</h1>
-      <p>Gerçek bir menajerlik deneyimi için oyun tam ekran ve yatay modda başlatılacaktır.</p>
-      <button class="btn-main" onclick="launchGameExperience()">Oyunu Tam Ekran Başlat</button>
+      <p>Oyunu tam ekran ve akıcı oynayabilmek için aşağıdaki butona dokunun.</p>
+      <button class="btn-main" onclick="launchGameExperience()">Oyuna Giriş Yap</button>
     </div>
   </div>
 
@@ -300,7 +298,30 @@
     </div>
   </div>
 
+  <script>
+    function launchGameExperience() {
+      // Tam ekran isteği (güvenli bir kullanıcı etkileşimi içinde tetiklenir)
+      const elem = document.documentElement;
+      if (elem.requestFullscreen) {
+        elem.requestFullscreen().catch(() => {});
+      } else if (elem.webkitRequestFullscreen) {
+        elem.webkitRequestFullscreen();
+      }
+
+      // Başlangıç ekranını gizle
+      document.getElementById('startLockScreen').style.display = 'none';
+
+      // Eğer kayıt varsa direkt oyunu aç, yoksa isim giriş ekranını aç
+      const savedUser = localStorage.getItem('pelitlibag_user');
+      if (savedUser) {
+        document.getElementById('gameContainer').style.display = 'flex';
+        if (typeof initGameSession === 'function') initGameSession();
+      } else {
+        document.getElementById('authModal').style.display = 'flex';
+      }
+    }
+  </script>
   <script src="script.js"></script>
 </body>
-          </html>
-          
+  </html>
+  
