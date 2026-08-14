@@ -3,23 +3,42 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pelitlibağ FC 26 - Yönetim Paneli</title>
+  <title>Pelitlibağ FC 26 - Ultimate Team</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <header>
-    <h1>PELİTLİBAĞ FC 26</h1>
+  <!-- HESAP OLUŞTURMA EKRANI (GİRİŞ) -->
+  <div id="authModal" class="modal-overlay" style="display: flex;">
+    <div class="modal-content">
+      <h2>PELİTLİBAĞ FC 26</h2>
+      <p style="color: #aaa; margin-bottom: 20px;">Kendi menajerlik kariyerine başlamak için hesap oluştur!</p>
+      <input type="text" id="managerNameInput" placeholder="Menajer Adınız..." class="lineup-select" style="margin-bottom: 15px; width: 100%;">
+      <input type="text" id="teamNameInput" placeholder="Takım Adınız (Örn: Pelitlibağ FK)..." class="lineup-select" style="margin-bottom: 20px; width: 100%;">
+      <button class="btn-train" onclick="createAccount()" style="padding: 12px 25px; font-size: 1rem; width: 100%;">Kariyeri Başlat (600 Coin Hediye!)</button>
+    </div>
+  </div>
+
+  <header id="mainHeader" style="display: none;">
+    <div class="header-top">
+      <h1 id="displayTeamName">PELİTLİBAĞ FC 26</h1>
+      <div class="user-stats-bar">
+        <span id="displayManager">Menajer: -</span>
+        <span class="coin-badge">🪙 <span id="displayCoins">0</span> Coin</span>
+      </div>
+    </div>
     <nav class="main-nav">
-      <button class="nav-btn active" data-tab="cards">🛡️ Kadro</button>
+      <button class="nav-btn active" data-tab="cards">🛡️ Kadro & Kartlar</button>
+      <button class="nav-btn" data-tab="packs">📦 Paket Aç</button>
       <button class="nav-btn" data-tab="lineup">⭐ İlk 4 & Kimya</button>
       <button class="nav-btn" data-tab="training">🏋️ Tesisler</button>
-      <button class="nav-btn" data-tab="matches">⚽ Maçlar</button>
+      <button class="nav-btn" data-tab="league">🏆 Ligler</button>
+      <button class="nav-btn" data-tab="matches">⚽ Maç Merkezi</button>
     </nav>
   </header>
 
   <!-- KADRO SEKMESİ -->
-  <section id="tab-cards" class="tab-content active">
+  <section id="tab-cards" class="tab-content">
     <div class="controls">
       <input type="text" id="searchInput" placeholder="Oyuncu ara...">
       <select id="posFilter">
@@ -34,10 +53,20 @@
     <main class="card-container" id="cardContainer"></main>
   </section>
 
+  <!-- PAKET AÇMA SEKMESİ -->
+  <section id="tab-packs" class="tab-content">
+    <div class="training-header">
+      <h2>📦 FUTBOLCU PAKETİ</h2>
+      <p>Paket açarak kadronu güçlendir! Her paket 50 kart içerir ve rastgele oyuncular kazandırır.</p>
+      <button class="btn-train" onclick="openPlayerPack()" style="margin-top: 15px; padding: 12px 30px; font-size: 1.1rem;">Paket Aç (100 Coin)</button>
+    </div>
+    <div id="packResultContainer" class="card-container"></div>
+  </section>
+
   <!-- İLK 4 VE KİMYA SEKMESİ -->
   <section id="tab-lineup" class="tab-content">
     <div class="training-header">
-      <h2>⭐ İLK 4 VE TAKIM KİMYASI</h2>
+      <h2>⭐ İLK 4, KİMYA VE KAPTANLIK</h2>
       <p id="chemistryDisplay">Kadro oluşturuluyor...</p>
     </div>
     <div id="lineupContainer" class="lineup-field"></div>
@@ -46,20 +75,58 @@
   <!-- ANTRENMAN TESİSLERİ -->
   <section id="tab-training" class="tab-content">
     <div class="training-header">
-      <h2>🏋️ ANTRENMAN TESİSLERİ</h2>
-      <p>Kategori seç, oyuncunu belirle, antrenmanı başlat ve 10 dk sonra verimi al!</p>
+      <h2>🏋️ ANTRENMAN VE DİNLENDİRME</h2>
+      <p>Oyuncularını geliştir, enerjilerini yönet ve sakatlık riskini önle!</p>
     </div>
     <div id="trainingContainer" class="training-grid"></div>
+  </section>
+
+  <!-- LİGLER SEKMESİ -->
+  <section id="tab-league" class="tab-content">
+    <div class="training-header">
+      <h2>🏆 LİG TABLOSU</h2>
+      <p>Pelitlibağ Süper Ligi'nde şampiyonluk için mücadele et!</p>
+    </div>
+    <div style="max-width: 700px; margin: 0 auto; background: #141824; border: 1px solid #2a3142; border-radius: 12px; padding: 20px;">
+      <table style="width: 100%; border-collapse: collapse; text-align: left;">
+        <thead>
+          <tr style="border-bottom: 2px solid #e5b350; color: #e5b350;">
+            <th style="padding: 10px;">Sıra</th>
+            <th style="padding: 10px;">Takım</th>
+            <th style="padding: 10px; text-align:center;">O</th>
+            <th style="padding: 10px; text-align:center;">G</th>
+            <th style="padding: 10px; text-align:center;">B</th>
+            <th style="padding: 10px; text-align:center;">M</th>
+            <th style="padding: 10px; text-align:center;">Puan</th>
+          </tr>
+        </thead>
+        <tbody id="leagueTableBody">
+          <!-- Dinamik doldurulacak -->
+        </tbody>
+      </table>
+    </div>
   </section>
 
   <!-- MAÇLAR SEKMESİ -->
   <section id="tab-matches" class="tab-content">
     <div class="training-header">
       <h2>⚽ MAÇ MERKEZİ</h2>
-      <p>Önce İlk 4 kadronu kur, ardından maçı canlı simülasyonla başlat!</p>
+      <p>Taktini seç, rakibini belirle ve canlı maçı başlat!</p>
     </div>
-    <div style="text-align: center; margin-top: 30px;">
-      <button class="btn-rest" onclick="openMatchModal()" style="padding: 15px 30px; font-size: 1.1rem;">Maçı Başlat</button>
+    <div style="max-width: 500px; margin: 0 auto; background: #141824; padding: 20px; border-radius: 12px; border: 1px solid #2a3142; text-align: center;">
+      <label style="display:block; margin-bottom: 8px; color: #e5b350; font-weight: 700;">Maç Taktiki / Oyun Tarzı</label>
+      <select id="matchTactics" class="lineup-select" style="margin-bottom: 20px; width: 100%;">
+        <option value="balanced">Dengeli Oyun</option>
+        <option value="attack">Agresif Hücum (Gol Şansı Artar)</option>
+        <option value="defense">Katı Savunma (Gol Yeme Riski Azalır)</option>
+      </select>
+      <button class="btn-rest" onclick="startMatch()" style="padding: 12px 30px; font-size: 1.1rem; width: 100%;">LİG MAÇINI BAŞLAT</button>
+    </div>
+
+    <!-- GEÇMİŞ MAÇLAR LOGLARI -->
+    <div style="max-width: 600px; margin: 30px auto 0;">
+      <h3 style="color: #e5b350; margin-bottom: 10px; text-align: center;">📜 Son Maç Sonuçları</h3>
+      <div id="matchHistoryList" style="display: flex; flex-direction: column; gap: 8px;"></div>
     </div>
   </section>
 
@@ -75,11 +142,11 @@
         </div>
       </div>
       <div id="matchCommentary" class="match-commentary">Maç başlamak üzere...</div>
-      <button id="closeMatchBtn" class="btn-train" style="display:none; margin: 20px auto 0; padding: 10px 20px;" onclick="closeMatchModal()">Maçı Kapat</button>
+      <button id="closeMatchBtn" class="btn-train" style="display:none; margin: 20px auto 0; padding: 10px 20px;" onclick="closeMatchModal()">Maçı Kapat & Ödülü Al</button>
     </div>
   </div>
 
   <script src="script.js"></script>
 </body>
-      </html>
-  
+        </html>
+            
