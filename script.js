@@ -57,7 +57,33 @@ function filterData() {
 
 searchInput.addEventListener('input', filterData);
 posFilter.addEventListener('change', filterData);
-
+const players = [
+  { 
+    id: "player_001", 
+    name: "Ömür Faik Köse", 
+    pos: "ST", 
+    ovr: 76, 
+    stats: { PAC: 90, SHO: 78, PAS: 70, DRI: 76, DEF: 74, PHY: 82 }, 
+    playstyle: "Rapid+", 
+    isLocked: false, 
+    energy: 100,
+    level: 1 
+  },
+  { 
+    id: "player_012", 
+    name: "Özel Efsane Oyuncu", 
+    pos: "CAM", 
+    ovr: 88, 
+    stats: { PAC: 85, SHO: 86, PAS: 88, DRI: 89, DEF: 60, PHY: 75 }, 
+    playstyle: "Master+", 
+    isLocked: true, // KİLİTLİ OYUNCI
+    unlockRequirement: "5 Antrenman Tamamla",
+    energy: 100,
+    level: 1 
+  }
+  // Diğer oyuncular...
+];
+      
 // Sayfa yüklendiğinde kartları bas
 renderCards(players);
    
