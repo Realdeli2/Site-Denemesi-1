@@ -168,7 +168,7 @@ header h1 {
   font-weight: 600;
 }
 
-/* İLK 4 SAHA GÖRÜNÜMÜ */
+/* İLK 4 SEÇİM VE KİMYA GÖRÜNÜMÜ */
 .lineup-field {
   max-width: 600px;
   margin: 0 auto;
@@ -178,7 +178,7 @@ header h1 {
   padding: 20px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 15px;
   align-items: center;
 }
 
@@ -189,25 +189,15 @@ header h1 {
   width: 100%;
 }
 
-.lineup-player-card {
+.lineup-select {
   background: #141824;
   border: 1px solid #e5b350;
-  border-radius: 8px;
-  padding: 10px 15px;
-  text-align: center;
-  min-width: 130px;
-}
-
-.lp-name {
-  font-size: 0.9rem;
-  font-weight: 700;
   color: #fff;
-}
-
-.lp-ovr {
-  font-size: 0.95rem;
-  color: #e5b350;
-  font-weight: 800;
+  padding: 8px 12px;
+  border-radius: 8px;
+  width: 80%;
+  font-size: 1rem;
+  outline: none;
 }
 
 /* ANTRENMAN TESİSLERİ */
@@ -366,4 +356,3 @@ header h1 {
   text-align: left;
   border: 1px solid #2a3142;
   }
-  
