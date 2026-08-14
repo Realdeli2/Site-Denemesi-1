@@ -3,13 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HALISAHA FC 26 - Kadro</title>
+  <title>Pelitlibağ FC 26 - Yönetim Panel</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
   <header>
-    <h1>HALISAHA FC 26</h1>
+    <h1>PELİTLİBAĞ FC 26</h1>
+    <!-- SEKMELER (TAB NAVIGASYON) -->
+    <nav class="main-nav">
+      <button class="nav-btn active" onclick="switchTab('cards')">🃏 Bütün Kartlar</button>
+      <button class="nav-btn" onclick="switchTab('training')">🏋️ Antrenman Tesisleri</button>
+    </nav>
+  </header>
+
+  <!-- SEKME 1: KART LİSTESİ -->
+  <section id="tab-cards" class="tab-content active">
     <div class="controls">
       <input type="text" id="searchInput" placeholder="Oyuncu ara...">
       <select id="posFilter">
@@ -21,54 +30,18 @@
         <option value="ST">ST (Forvet)</option>
       </select>
     </div>
-  </header>
-  <nav class="main-nav">
-  <button class="nav-btn active" onclick="switchTab('cards')">🃏 Bütün Kartlar</button>
-  <button class="nav-btn" onclick="switchTab('squad')">⚽ Kadro Kurma (11)</button>
+    <main class="card-container" id="cardContainer"></main>
+  </section>
 
-  <button class="nav-btn" onclick="switchTab('training')">🏋️ Antrenman Tesisleri</button>
-</nav>
-
-<!-- SEKME 1: KARTLAR & KİLİTLİ OYUNCULAR -->
-<section id="tab-cards" class="tab-content active">
-  <div class="card-container" id="cardContainer"></div>
-</section>
-
-
-<section id="tab-squad" class="tab-content">
-  <div class="pitch-container">
-    <div class="pitch">
-      
-      <div class="pitch-slot" data-pos="ST">ST Seç</div>
-      <div class="pitch-slot" data-pos="CAM">CAM Seç</div>
-      <div class="pitch-slot" data-pos="CB">CB Seç</div>
-      <div class="pitch-slot" data-pos="GK">GK Seç</div>
+  <!-- SEKME 2: ANTRENMAN VE GELİŞİM -->
+  <section id="tab-training" class="tab-content">
+    <div class="training-header">
+      <h2>🏋️ ANTRENMAN VE OYUNCU GELİŞİMİ</h2>
+      <p>İstatistik butonlarına basarak oyuncularını geliştir, seviyelerini atlat!</p>
     </div>
-  </div>
-</section>
-
-
-<section id="tab-training" class="tab-content">
-  <div id="trainingContainer" class="training-list"></div>
-</section>
-  
-
-  <main class="card-container" id="cardContainer">
-    <!-- Kartlar JavaScript ile buraya eklenecek -->
-  </main>
+    <div id="trainingContainer" class="training-grid"></div>
+  </section>
 
   <script src="script.js"></script>
-  <!-- ANTRENMAN TESİSLERİ MODÜLÜ -->
-<section id="tab-training" class="tab-content active">
-  <div class="training-header">
-    <h2>🏋️ ANTRENMAN VE OYUNCU GELİŞİMİ</h2>
-    <p>Oyuncularını çalıştır, istatistiklerini yükselt ve seviyelerini arttır!</p>
-  </div>
-
-  <div id="trainingContainer" class="training-grid">
-    <!-- Antrenman Kartları JavaScript ile buraya dinamik dolacak -->
-  </div>
-</section>
-  
 </body>
 </html>
