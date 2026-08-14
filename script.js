@@ -16,11 +16,13 @@ const defaultPlayers = [
 let players = JSON.parse(localStorage.getItem('pelitlibag_players')) || defaultPlayers;
 let activeTrainings = JSON.parse(localStorage.getItem('pelitlibag_trainings')) || {};
 let lastRestTimes = JSON.parse(localStorage.getItem('pelitlibag_rest_times')) || {};
+let currentLineup = JSON.parse(localStorage.getItem('pelitlibag_lineup')) || { st: "", mid: "", def: "", gk: "" };
 
 function saveAll() {
   localStorage.setItem('pelitlibag_players', JSON.stringify(players));
   localStorage.setItem('pelitlibag_trainings', JSON.stringify(activeTrainings));
   localStorage.setItem('pelitlibag_rest_times', JSON.stringify(lastRestTimes));
+  localStorage.setItem('pelitlibag_lineup', JSON.stringify(currentLineup));
 }
 
 function getSortedPlayers(data) {
@@ -72,49 +74,71 @@ function renderCards(data) {
   });
 }
 
-// İLK 4 VE KİMYA OLUŞTURMA (1 Kaleci, 1 Stoper, 1 Orta Saha, 1 Forvet)
+// İLK 4 KADRO OLUŞTURMA VE KİMYA
 function renderLineup() {
   const container = document.getElementById('lineupContainer');
   const chemDisplay = document.getElementById('chemistryDisplay');
   if (!container) return;
-  container.innerHTML = '';
 
   const sorted = getSortedPlayers(players);
-  const gk = sorted.filter(p => p.pos === 'GK').slice(0, 1);
-  const def = sorted.filter(p => p.pos === 'CB' || p.pos === 'RB').slice(0, 1);
-  const mid = sorted.filter(p => p.pos === 'CAM').slice(0, 1);
-  const st = sorted.filter(p => p.pos === 'ST').slice(0, 1);
+  const stOptions = sorted.filter(p => p.pos === 'ST').map(p => `<option value="${p.id}" ${currentLineup.st === p.id ? 'selected' : ''}>${p.name} (ST - ${p.ovr})</option>`).join('');
+  const midOptions = sorted.filter(p => p.pos === 'CAM').map(p => `<option value="${p.id}" ${currentLineup.mid === p.id ? 'selected' : ''}>${p.name} (CAM - ${p.ovr})</option>`).join('');
+  const defOptions = sorted.filter(p => p.pos === 'CB' || p.pos === 'RB').map(p => `<option value="${p.id}" ${currentLineup.def === p.id ? 'selected' : ''}>${p.name} (${p.pos} - ${p.ovr})</option>`).join('');
+  const gkOptions = sorted.filter(p => p.pos === 'GK').map(p => `<option value="${p.id}" ${currentLineup.gk === p.id ? 'selected' : ''}>${p.name} (GK - ${p.ovr})</option>`).join('');
 
-  // Kimya Hesaplama (Özellik ortalamalarına göre)
-  const lineUpAll = [...gk, ...def, ...mid, ...st];
-  let totalChemistry = 80;
-  lineUpAll.forEach(p => {
-    const avgStat = Object.values(p.stats).reduce((a,b)=>a+b,0) / Object.values(p.stats).length;
-    if(avgStat > 70) totalChemistry += 5;
-  });
-  totalChemistry = Math.min(100, totalChemistry);
-  chemDisplay.innerHTML = `Takım Kimyası: ⚡ %${totalChemistry} (Uyumlu 4'lü Kadro)`;
-
-  const createCardHtml = (p) => `
-    <div class="lineup-player-card">
-      <div class="lp-ovr">${p ? p.ovr + ' - ' + p.pos : 'BOŞ'}</div>
-      <div class="lp-name">${p ? p.name : 'Seçilmedi'}</div>
+  container.innerHTML = `
+    <div style="width: 100%; text-align: center;">
+      <label style="font-size:0.85rem; color:#aaa;">Forvet Seçimi</label>
+      <select id="lineup_st" class="lineup-select" onchange="updateLineup()"><option value="">Seçiniz...</option>${stOptions}</select>
+    </div>
+    <div style="width: 100%; text-align: center;">
+      <label style="font-size:0.85rem; color:#aaa;">Orta Saha Seçimi</label>
+      <select id="lineup_mid" class="lineup-select" onchange="updateLineup()"><option value="">Seçiniz...</option>${midOptions}</select>
+    </div>
+    <div style="width: 100%; text-align: center;">
+      <label style="font-size:0.85rem; color:#aaa;">Stoper / Defans Seçimi</label>
+      <select id="lineup_def" class="lineup-select" onchange="updateLineup()"><option value="">Seçiniz...</option>${defOptions}</select>
+    </div>
+    <div style="width: 100%; text-align: center;">
+      <label style="font-size:0.85rem; color:#aaa;">Kaleci Seçimi</label>
+      <select id="lineup_gk" class="lineup-select" onchange="updateLineup()"><option value="">Seçiniz...</option>${gkOptions}</select>
     </div>
   `;
 
-  container.innerHTML = `
-    <div style="font-size:0.9rem; color:#aaa; margin-bottom:5px;">Forvet</div>
-    <div class="lineup-row">${st.map(createCardHtml).join('')}</div>
-    
-    <div style="font-size:0.9rem; color:#aaa; margin-top:10px;">Orta Saha</div>
-    <div class="lineup-row">${mid.map(createCardHtml).join('')}</div>
-    
-    <div style="font-size:0.9rem; color:#aaa; margin-top:10px;">Stoper</div>
-    <div class="lineup-row">${def.map(createCardHtml).join('')}</div>
-    
-    <div style="font-size:0.9rem; color:#aaa; margin-top:10px;">Kaleci</div>
-    <div class="lineup-row">${gk.map(createCardHtml).join('')}</div>
-  `;
+  calcChemistry();
+}
+
+function updateLineup() {
+  currentLineup.st = document.getElementById('lineup_st').value;
+  currentLineup.mid = document.getElementById('lineup_mid').value;
+  currentLineup.def = document.getElementById('lineup_def').value;
+  currentLineup.gk = document.getElementById('lineup_gk').value;
+  saveAll();
+  calcChemistry();
+}
+
+function calcChemistry() {
+  const chemDisplay = document.getElementById('chemistryDisplay');
+  const { st, mid, def, gk } = currentLineup;
+  
+  if(!st || !mid || !def || !gk) {
+    chemDisplay.innerHTML = `⚠️ Maça girebilmek için tüm 4 pozisyonu doldurmalısın!`;
+    return;
+  }
+
+  const pSt = players.find(x => x.id === st);
+  const pMid = players.find(x => x.id === mid);
+  const pDef = players.find(x => x.id === def);
+  const pGk = players.find(x => x.id === gk);
+
+  const squad = [pSt, pMid, pDef, pGk];
+  let chem = 75;
+  squad.forEach(p => {
+    const avg = Object.values(p.stats).reduce((a,b)=>a+b,0) / Object.values(p.stats).length;
+    if(avg > 70) chem += 6;
+  });
+  chem = Math.min(100, chem);
+  chemDisplay.innerHTML = `⚡ Takım Kimyası: %${chem} (Kadro Tamamlandı!)`;
 }
 
 // ANTRENMAN SİSTEMİ
@@ -256,10 +280,16 @@ function restPlayer(playerId) {
   renderTraining();
 }
 
-// CANLI MAÇ SİMÜLASYONU PENCERESİ
+// CANLI MAÇ SİSTEMİ (KONTROLLÜ)
 let matchInterval = null;
 
 function openMatchModal() {
+  const { st, mid, def, gk } = currentLineup;
+  if(!st || !mid || !def || !gk) {
+    alert("Önce 'İlk 4 & Kimya' sekmesinden 4 kişilik ilk 11 kadronu eksiksiz oluşturmalısın!");
+    return;
+  }
+
   const modal = document.getElementById('matchModal');
   modal.style.display = 'flex';
   
