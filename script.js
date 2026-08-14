@@ -1,4 +1,3 @@
-// OYUNCU VERİ TABANI (localStorage Desteği ile)
 const defaultPlayers = [
   { id: "player_001", name: "Ömür Faik Köse", pos: "ST", ovr: 76, energy: 100, xp: 0, level: 1, playstyle: "Rapid+", stats: { PAC: 90, SHO: 78, PAS: 70, DRI: 76, DEF: 74, PHY: 82 } },
   { id: "player_002", name: "Şaban Efe Turgut", pos: "ST", ovr: 75, energy: 100, xp: 0, level: 1, playstyle: "Power Shot+", stats: { PAC: 79, SHO: 82, PAS: 68, DRI: 74, DEF: 40, PHY: 64 } },
@@ -14,30 +13,27 @@ const defaultPlayers = [
   { id: "player_012", name: "Kağan Bozkurt", pos: "CAM", ovr: 72, energy: 100, xp: 0, level: 1, playstyle: "Incisive Pass+", stats: { PAC: 72, SHO: 68, PAS: 75, DRI: 74, DEF: 50, PHY: 66 } }
 ];
 
-// Hafızadan verileri yükle, yoksa varsayılanları kullan
 let players = JSON.parse(localStorage.getItem('pelitlibag_players')) || defaultPlayers;
+let activeTrainings = JSON.parse(localStorage.getItem('pelitlibag_trainings')) || {};
+let lastRestTimes = JSON.parse(localStorage.getItem('pelitlibag_rest_times')) || {};
 
-// Verileri tarayıcı hafızasına kaydetme fonksiyonu
-function savePlayers() {
+function saveAll() {
   localStorage.setItem('pelitlibag_players', JSON.stringify(players));
+  localStorage.setItem('pelitlibag_trainings', JSON.stringify(activeTrainings));
+  localStorage.setItem('pelitlibag_rest_times', JSON.stringify(lastRestTimes));
 }
 
-// Oyuncuları reytinge (OVR) göre büyükten küçüğe sıralayan yardımcı fonksiyon
 function getSortedPlayers(data) {
   return [...data].sort((a, b) => b.ovr - a.ovr);
 }
 
-// SEKME GEÇİŞİ
 function initTabs() {
   const navButtons = document.querySelectorAll('.nav-btn');
-  
   navButtons.forEach(btn => {
     btn.addEventListener('click', (e) => {
       const targetTab = e.target.getAttribute('data-tab');
-
       navButtons.forEach(b => b.classList.remove('active'));
       e.target.classList.add('active');
-
       document.querySelectorAll('.tab-content').forEach(section => {
         section.classList.remove('active');
       });
@@ -46,15 +42,12 @@ function initTabs() {
   });
 }
 
-// 1. KARTLARI ÇİZME (Reyting Sıralamalı)
 function renderCards(data) {
   const container = document.getElementById('cardContainer');
   if (!container) return;
   container.innerHTML = '';
   
-  const sortedData = getSortedPlayers(data);
-
-  sortedData.forEach(p => {
+  getSortedPlayers(data).forEach(p => {
     const statsHtml = Object.entries(p.stats)
       .map(([lbl, val]) => `<div class="stat-item"><span class="stat-val">${val}</span><span class="stat-lbl">${lbl}</span></div>`)
       .join('');
@@ -64,10 +57,7 @@ function renderCards(data) {
     card.innerHTML = `
       <div class="card-inner">
         <div class="card-header">
-          <div class="rating-box">
-            <span class="ovr">${p.ovr}</span>
-            <span class="pos">${p.pos}</span>
-          </div>
+          <div class="rating-box"><span class="ovr">${p.ovr}</span><span class="pos">${p.pos}</span></div>
         </div>
         <div class="player-name">${p.name}</div>
         <div class="stats-grid">${statsHtml}</div>
@@ -78,83 +68,160 @@ function renderCards(data) {
   });
 }
 
-// 2. ANTRENMAN EKRANI ÇİZME (Reyting Sıralamalı)
+const trainingCategories = [
+  { id: "st", title: "🎯 Forvet Antrenmanları", drills: [{ key: "SHO", name: "Şut Çalışması" }, { key: "PAC", name: "Hız Antrenmanı" }, { key: "DRI", name: "Bitiricilik / Dribbling" }] },
+  { id: "cb", title: "🛡️ Defans Antrenmanları", drills: [{ key: "DEF", name: "Kafa Çalışması / Pozisyon" }, { key: "PHY", name: "Güç ve Müdahale" }] },
+  { id: "cam", title: "⚡ Orta Saha Antrenmanları", drills: [{ key: "PAS", name: "Pas ve Vizyon" }, { key: "DRI", name: "Top Kontrolü" }] },
+  { id: "phy", title: "💪 Fizik ve Kondisyon", drills: [{ key: "PHY", name: "Dayanıklılık" }, { key: "PAC", name: "Sprint Çalışması" }] }
+];
+
 function renderTraining() {
   const container = document.getElementById('trainingContainer');
   if (!container) return;
   container.innerHTML = '';
 
-  const sortedPlayers = getSortedPlayers(players);
+  trainingCategories.forEach(cat => {
+    const drillsHtml = cat.drills.map(drill => {
+      const trainKey = `${cat.id}_${drill.key}`;
+      const ongoing = activeTrainings[trainKey];
+      let controlHtml = '';
 
-  sortedPlayers.forEach(p => {
-    const isEnergyLow = p.energy < 25;
+      if (ongoing) {
+        const remaining = Math.max(0, Math.ceil((ongoing.endTime - Date.now()) / 1000));
+        if (remaining > 0) {
+          controlHtml = `<span class="timer-text">⏳ Süre: ${Math.floor(remaining/60)}m ${remaining%60}s (${ongoing.playerName})</span>`;
+        } else {
+          // Süre bitti, verimi yükle
+          completeTraining(trainKey);
+        }
+      } else {
+        const options = getSortedPlayers(players).map(p => `<option value="${p.id}">${p.name} (${p.pos})</option>`).join('');
+        controlHtml = `
+          <div class="train-controls">
+            <select id="select_${trainKey}">${options}</select>
+            <button class="btn-train" onclick="startTraining('${cat.id}', '${drill.key}')">Başlat</button>
+          </div>
+        `;
+      }
 
-    const statBtns = Object.keys(p.stats).map(statKey => `
-      <button class="btn-train" ${isEnergyLow ? 'disabled' : ''} onclick="trainPlayer('${p.id}', '${statKey}')">
-        +1 ${statKey} (${p.stats[statKey]})
-      </button>
-    `).join('');
+      return `
+        <div class="sub-train-item">
+          <span class="sub-train-title">${drill.name} (+1 ${drill.key})</span>
+          <div id="control_${trainKey}">${controlHtml}</div>
+        </div>
+      `;
+    }).join('');
 
     const card = document.createElement('div');
     card.className = 'training-card';
-    card.innerHTML = `
-      <div class="t-card-header">
-        <span class="t-name">${p.name} (${p.pos})</span>
-        <span class="t-badge">OVR ${p.ovr} | Lvl ${p.level}</span>
-      </div>
-
-      <div class="bar-container">
-        <div class="bar-label"><span>Enerji</span><span>%${p.energy}</span></div>
-        <div class="progress-bg"><div class="progress-fill-energy" style="width: ${p.energy}%;"></div></div>
-      </div>
-
-      <div class="bar-container">
-        <div class="bar-label"><span>XP İlerlemesi</span><span>${p.xp} / 100 XP</span></div>
-        <div class="progress-bg"><div class="progress-fill-xp" style="width: ${p.xp}%;"></div></div>
-      </div>
-
-      <div class="stat-buttons">${statBtns}</div>
-      <button class="btn-rest" onclick="restPlayer('${p.id}')">⚡ Dinlendir (+30 Enerji)</button>
-    `;
+    card.innerHTML = `<div class="t-card-header">${cat.title}</div>${drillsHtml}`;
     container.appendChild(card);
   });
+
+  // Oyuncu dinlendirme listesi ayrı bir kartta
+  renderRestCard();
 }
 
-// 3. ANTRENMAN İŞLEVİ
-function trainPlayer(playerId, statKey) {
-  const p = players.find(item => item.id === playerId);
+function renderRestCard() {
+  const container = document.getElementById('trainingContainer');
+  const sorted = getSortedPlayers(players);
+  const now = Date.now();
+
+  const restRows = sorted.map(p => {
+    const lastTime = lastRestTimes[p.id] || 0;
+    const diff = now - lastTime;
+    const cooldown = 60 * 60 * 1000; // 1 saat
+    const canRest = diff >= cooldown;
+    const remainingTime = Math.ceil((cooldown - diff) / 1000 / 60);
+
+    return `
+      <div style="display: flex; justify-content: space-between; align-items: center; background: #1a1f29; padding: 8px; border-radius: 6px; margin-bottom: 6px;">
+        <div>
+          <span style="font-weight:600;">${p.name}</span> <span style="font-size:0.8rem; color:#aaa;">(Enerji: %${p.energy})</span>
+        </div>
+        <div>
+          ${canRest ? `<button class="btn-rest" onclick="restPlayer('${p.id}')">Dinlendir (+25)</button>` : `<span class="timer-text">${remainingTime} dk sonra</span>`}
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  const restCard = document.createElement('div');
+  restCard.className = 'training-card';
+  restCard.innerHTML = `<div class="t-card-header">⚡ Oyuncu Dinlendirme (1 Saatte +25 Enerji)</div><div style="max-height:250px; overflow-y:auto;">${restRows}</div>`;
+  container.appendChild(restCard);
+}
+
+function startTraining(catId, statKey) {
+  const trainKey = `${catId}_${statKey}`;
+  const selectElem = document.getElementById(`select_${trainKey}`);
+  const playerId = selectElem.value;
+  const p = players.find(x => x.id === playerId);
+
   if (!p) return;
+  if (p.energy < 25) {
+    alert("Oyuncunun enerjisi yetersiz! En az 25 enerji gerekiyor.");
+    return;
+  }
 
-  if (p.energy >= 25) {
-    p.stats[statKey] += 1;
-    p.energy -= 25;
-    p.xp += 35;
+  p.energy -= 25;
+  activeTrainings[trainKey] = {
+    playerId: p.id,
+    playerName: p.name,
+    statKey: statKey,
+    endTime: Date.now() + (10 * 60 * 1000) // 10 dakika
+  };
 
+  saveAll();
+  renderTraining();
+  renderCards(players);
+}
+
+function completeTraining(trainKey) {
+  const data = activeTrainings[trainKey];
+  if (!data) return;
+
+  const p = players.find(x => x.id === data.playerId);
+  if (p) {
+    p.stats[data.statKey] = (p.stats[data.statKey] || 50) + 1;
+    p.xp += 40;
     if (p.xp >= 100) {
       p.level += 1;
       p.xp -= 100;
       p.ovr += 1;
     }
-
-    savePlayers();
-    renderTraining();
-    filterData();
   }
+
+  delete activeTrainings[trainKey];
+  saveAll();
+  renderTraining();
+  renderCards(players);
 }
 
-// 4. DİNLENDİRME İŞLEVİ
 function restPlayer(playerId) {
-  const p = players.find(item => item.id === playerId);
+  const p = players.find(x => x.id === playerId);
   if (!p) return;
 
-  if (p.energy < 100) {
-    p.energy = Math.min(100, p.energy + 30);
-    savePlayers();
-    renderTraining();
+  p.energy = Math.min(100, p.energy + 25);
+  lastRestTimes[playerId] = Date.now();
+  saveAll();
+  renderTraining();
+}
+
+function playMatch() {
+  const resultDiv = document.getElementById('matchResult');
+  const goalsFor = Math.floor(Math.random() * 4);
+  const goalsAgainst = Math.floor(Math.random() * 3);
+  
+  if (goalsFor > goalsAgainst) {
+    resultDiv.innerHTML = `🎉 Tebrikler! Maçı Kazandınız: Pelitlibağ FC ${goalsFor} - ${goalsAgainst} Rakip`;
+  } else if (goalsFor === goalsAgainst) {
+    resultDiv.innerHTML = `🤝 Berabere Bitti: Pelitlibağ FC ${goalsFor} - ${goalsAgainst} Rakip`;
+  } else {
+    resultDiv.innerHTML = `❌ Mağlubiyet: Pelitlibağ FC ${goalsFor} - ${goalsAgainst} Rakip`;
   }
 }
 
-// FİLTRELEME
 function filterData() {
   const query = document.getElementById('searchInput').value.toLowerCase();
   const selectedPos = document.getElementById('posFilter').value;
@@ -168,7 +235,6 @@ function filterData() {
   renderCards(filtered);
 }
 
-// SAYFA YÜKLENDİĞİNDE
 document.addEventListener("DOMContentLoaded", () => {
   renderCards(players);
   renderTraining();
@@ -176,5 +242,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document.getElementById('searchInput').addEventListener('input', filterData);
   document.getElementById('posFilter').addEventListener('change', filterData);
+
+  // Her saniye arayüzdeki zamanlayıcıları güncelle
+  setInterval(() => {
+    if (document.getElementById('tab-training').classList.contains('active')) {
+      renderTraining();
+    }
+  }, 1000);
 });
-  
+    
