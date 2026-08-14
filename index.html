@@ -10,14 +10,15 @@
 
   <header>
     <h1>PELİTLİBAĞ FC 26</h1>
-    <!-- SEKMELER (TAB NAVIGASYON) -->
+    <!-- SEKMELER -->
     <nav class="main-nav">
-      <button class="nav-btn active" data-tab="cards">🃏 Bütün Kartlar</button>
-      <button class="nav-btn" data-tab="training">🏋️ Antrenman Tesisleri</button>
+      <button class="nav-btn active" data-tab="cards">🃏 Kartlar</button>
+      <button class="nav-btn" data-tab="training">🏋️ Tesisler</button>
+      <button class="nav-btn" data-tab="matches">⚽ Maçlar</button>
     </nav>
   </header>
 
-  <!-- SEKME 1: KART LİSTESİ -->
+  <!-- SEKME 1: KARTLAR -->
   <section id="tab-cards" class="tab-content active">
     <div class="controls">
       <input type="text" id="searchInput" placeholder="Oyuncu ara...">
@@ -33,16 +34,28 @@
     <main class="card-container" id="cardContainer"></main>
   </section>
 
-  <!-- SEKME 2: ANTRENMAN VE GELİŞİM -->
+  <!-- SEKME 2: ANTRENMAN TESİSLERİ -->
   <section id="tab-training" class="tab-content">
     <div class="training-header">
-      <h2>🏋️ ANTRENMAN VE OYUNCU GELİŞİMİ</h2>
-      <p>İstatistik butonlarına basarak oyuncularını geliştir, seviyelerini atlat!</p>
+      <h2>🏋️ ANTRENMAN TESİSLERİ</h2>
+      <p>Kategori seç, oyuncunu belirle, antrenmanı başlat ve 10 dk sonra verimi al!</p>
     </div>
     <div id="trainingContainer" class="training-grid"></div>
   </section>
 
+  <!-- SEKME 3: MAÇLAR -->
+  <section id="tab-matches" class="tab-content">
+    <div class="training-header">
+      <h2>⚽ MAÇ MERKEZİ</h2>
+      <p>Takımını maça çıkar, galibiyet serisi yakala!</p>
+    </div>
+    <div style="text-align: center; margin-top: 30px;">
+      <button class="btn-rest" onclick="playMatch()" style="padding: 15px 30px; font-size: 1.1rem;">Maç Yap (Simülasyon)</button>
+      <div id="matchResult" style="margin-top: 20px; font-size: 1.2rem; color: #e5b350;"></div>
+    </div>
+  </section>
+
   <script src="script.js"></script>
 </body>
-  </html>
-  
+                                         </html>
+                                         
