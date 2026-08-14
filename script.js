@@ -13,7 +13,7 @@ const players = [
   { id: "player_011", name: "Bekir Akdoğan", pos: "ST", ovr: 65, energy: 100, xp: 0, level: 1, playstyle: "Finesse Shot+", stats: { PAC: 52, SHO: 82, PAS: 48, DRI: 62, DEF: 32, PHY: 42 } }
 ];
 
-// SEKME GEÇİŞİ İÇİN OLAY DİNLEYİCİ
+// SEKME GEÇİŞİ
 function initTabs() {
   const navButtons = document.querySelectorAll('.nav-btn');
   
@@ -21,11 +21,9 @@ function initTabs() {
     btn.addEventListener('click', (e) => {
       const targetTab = e.target.getAttribute('data-tab');
 
-      // Aktif buton görselini değiştir
       navButtons.forEach(b => b.classList.remove('active'));
       e.target.classList.add('active');
 
-      // Aktif sekme ekranını değiştir
       document.querySelectorAll('.tab-content').forEach(section => {
         section.classList.remove('active');
       });
@@ -104,7 +102,7 @@ function renderTraining() {
   });
 }
 
-// 3. ANTRENMAN TIKLAMA İŞLEVİ (+1 İSTATİSTİK)
+// 3. ANTRENMAN İŞLEVİ
 function trainPlayer(playerId, statKey) {
   const p = players.find(item => item.id === playerId);
   if (!p) return;
@@ -125,7 +123,7 @@ function trainPlayer(playerId, statKey) {
   }
 }
 
-// 4. DİNLENDİRME TIKLAMA İŞLEVİ
+// 4. DİNLENDİRME İŞLEVİ
 function restPlayer(playerId) {
   const p = players.find(item => item.id === playerId);
   if (!p) return;
@@ -136,27 +134,27 @@ function restPlayer(playerId) {
   }
 }
 
-// ARAMA VE FİLTRELEME
+// FİLTRELEME
 function filterData() {
   const query = document.getElementById('searchInput').value.toLowerCase();
   const selectedPos = document.getElementById('posFilter').value;
 
   const filtered = players.filter(p => {
     const matchesName = p.name.toLowerCase().includes(query);
-    const matchesPos = selectedPos === 'ALL' || p.pos === selectedPos;
+    const matchesPos = (selectedPos === 'ALL') || (p.pos === selectedPos);
     return matchesName && matchesPos;
   });
 
   renderCards(filtered);
 }
 
-// SAYFA İLK YÜKLENDİĞİNDE ÇALIŞACAK KODLAR
+// SAYFA YÜKLENDİĞİNDE
 document.addEventListener("DOMContentLoaded", () => {
   renderCards(players);
   renderTraining();
-  initTabs(); // Sekme geçişlerini aktif eder
+  initTabs();
 
   document.getElementById('searchInput').addEventListener('input', filterData);
   document.getElementById('posFilter').addEventListener('change', filterData);
 });
-    
+   
