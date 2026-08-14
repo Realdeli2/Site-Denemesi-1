@@ -203,3 +203,144 @@ header h1 {
   align-items: center;
   padding: 20px;
 }
+/* Antrenman Modülü Stilleri */
+.training-header {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.training-header h2 {
+  color: #e5b350;
+  font-size: 2rem;
+  letter-spacing: 1px;
+}
+
+.training-header p {
+  color: #888;
+  font-size: 0.95rem;
+}
+
+.training-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.training-card {
+  background: #141824;
+  border: 1px solid #2a3142;
+  border-radius: 12px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+}
+
+.t-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #2a3142;
+  padding-bottom: 10px;
+}
+
+.t-name {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #fff;
+}
+
+.t-badge {
+  background: #e5b350;
+  color: #000;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 800;
+  font-size: 0.85rem;
+}
+
+/* Enerji ve Barlar */
+.bar-container {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.bar-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: #aaa;
+}
+
+.progress-bg {
+  background: #0b0e14;
+  height: 10px;
+  border-radius: 5px;
+  overflow: hidden;
+  border: 1px solid #333;
+}
+
+.progress-fill-energy {
+  background: linear-gradient(90deg, #e74c3c, #2ecc71);
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+.progress-fill-xp {
+  background: #3498db;
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+/* Butonlar */
+.stat-buttons {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 5px;
+}
+
+.btn-train {
+  background: #1a1f29;
+  border: 1px solid #e5b350;
+  color: #e5b350;
+  padding: 8px;
+  border-radius: 6px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s;
+  font-size: 0.85rem;
+}
+
+.btn-train:hover:not(:disabled) {
+  background: #e5b350;
+  color: #000;
+}
+
+.btn-train:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  border-color: #555;
+  color: #555;
+}
+
+.btn-rest {
+  background: #27ae60;
+  color: #fff;
+  border: none;
+  padding: 10px;
+  border-radius: 6px;
+  font-weight: 700;
+  cursor: pointer;
+  width: 100%;
+  margin-top: 5px;
+  transition: 0.2s;
+}
+
+.btn-rest:hover {
+  background: #219150;
+  }
