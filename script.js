@@ -38,6 +38,10 @@ function initTabs() {
         section.classList.remove('active');
       });
       document.getElementById(`tab-${targetTab}`).classList.add('active');
+      
+      if(targetTab === 'lineup') {
+        renderLineup();
+      }
     });
   });
 }
@@ -68,6 +72,52 @@ function renderCards(data) {
   });
 }
 
+// İLK 4 VE KİMYA OLUŞTURMA (1 Kaleci, 1 Stoper, 1 Orta Saha, 1 Forvet)
+function renderLineup() {
+  const container = document.getElementById('lineupContainer');
+  const chemDisplay = document.getElementById('chemistryDisplay');
+  if (!container) return;
+  container.innerHTML = '';
+
+  const sorted = getSortedPlayers(players);
+  const gk = sorted.filter(p => p.pos === 'GK').slice(0, 1);
+  const def = sorted.filter(p => p.pos === 'CB' || p.pos === 'RB').slice(0, 1);
+  const mid = sorted.filter(p => p.pos === 'CAM').slice(0, 1);
+  const st = sorted.filter(p => p.pos === 'ST').slice(0, 1);
+
+  // Kimya Hesaplama (Özellik ortalamalarına göre)
+  const lineUpAll = [...gk, ...def, ...mid, ...st];
+  let totalChemistry = 80;
+  lineUpAll.forEach(p => {
+    const avgStat = Object.values(p.stats).reduce((a,b)=>a+b,0) / Object.values(p.stats).length;
+    if(avgStat > 70) totalChemistry += 5;
+  });
+  totalChemistry = Math.min(100, totalChemistry);
+  chemDisplay.innerHTML = `Takım Kimyası: ⚡ %${totalChemistry} (Uyumlu 4'lü Kadro)`;
+
+  const createCardHtml = (p) => `
+    <div class="lineup-player-card">
+      <div class="lp-ovr">${p ? p.ovr + ' - ' + p.pos : 'BOŞ'}</div>
+      <div class="lp-name">${p ? p.name : 'Seçilmedi'}</div>
+    </div>
+  `;
+
+  container.innerHTML = `
+    <div style="font-size:0.9rem; color:#aaa; margin-bottom:5px;">Forvet</div>
+    <div class="lineup-row">${st.map(createCardHtml).join('')}</div>
+    
+    <div style="font-size:0.9rem; color:#aaa; margin-top:10px;">Orta Saha</div>
+    <div class="lineup-row">${mid.map(createCardHtml).join('')}</div>
+    
+    <div style="font-size:0.9rem; color:#aaa; margin-top:10px;">Stoper</div>
+    <div class="lineup-row">${def.map(createCardHtml).join('')}</div>
+    
+    <div style="font-size:0.9rem; color:#aaa; margin-top:10px;">Kaleci</div>
+    <div class="lineup-row">${gk.map(createCardHtml).join('')}</div>
+  `;
+}
+
+// ANTRENMAN SİSTEMİ
 const trainingCategories = [
   { id: "st", title: "🎯 Forvet Antrenmanları", drills: [{ key: "SHO", name: "Şut Çalışması" }, { key: "PAC", name: "Hız Antrenmanı" }, { key: "DRI", name: "Bitiricilik / Dribbling" }] },
   { id: "cb", title: "🛡️ Defans Antrenmanları", drills: [{ key: "DEF", name: "Kafa Çalışması / Pozisyon" }, { key: "PHY", name: "Güç ve Müdahale" }] },
@@ -91,7 +141,6 @@ function renderTraining() {
         if (remaining > 0) {
           controlHtml = `<span class="timer-text">⏳ Süre: ${Math.floor(remaining/60)}m ${remaining%60}s (${ongoing.playerName})</span>`;
         } else {
-          // Süre bitti, verimi yükle
           completeTraining(trainKey);
         }
       } else {
@@ -118,7 +167,6 @@ function renderTraining() {
     container.appendChild(card);
   });
 
-  // Oyuncu dinlendirme listesi ayrı bir kartta
   renderRestCard();
 }
 
@@ -208,18 +256,64 @@ function restPlayer(playerId) {
   renderTraining();
 }
 
-function playMatch() {
-  const resultDiv = document.getElementById('matchResult');
-  const goalsFor = Math.floor(Math.random() * 4);
-  const goalsAgainst = Math.floor(Math.random() * 3);
+// CANLI MAÇ SİMÜLASYONU PENCERESİ
+let matchInterval = null;
+
+function openMatchModal() {
+  const modal = document.getElementById('matchModal');
+  modal.style.display = 'flex';
   
-  if (goalsFor > goalsAgainst) {
-    resultDiv.innerHTML = `🎉 Tebrikler! Maçı Kazandınız: Pelitlibağ FC ${goalsFor} - ${goalsAgainst} Rakip`;
-  } else if (goalsFor === goalsAgainst) {
-    resultDiv.innerHTML = `🤝 Berabere Bitti: Pelitlibağ FC ${goalsFor} - ${goalsAgainst} Rakip`;
-  } else {
-    resultDiv.innerHTML = `❌ Mağlubiyet: Pelitlibağ FC ${goalsFor} - ${goalsAgainst} Rakip`;
-  }
+  document.getElementById('homeGoals').innerText = '0';
+  document.getElementById('awayGoals').innerText = '0';
+  document.getElementById('matchMinute').innerText = "0'";
+  document.getElementById('matchCommentary').innerText = "Maç başladı, iki takıma da başarılar!";
+  document.getElementById('closeMatchBtn').style.display = 'none';
+
+  let minute = 0;
+  let homeScore = 0;
+  let awayScore = 0;
+
+  const commentaries = [
+    "Orta alanda sert bir mücadele, hakem oyunu devam ettiriyor.",
+    "Pelitlibağ FC rakip yarı sahasında baskı kurdu.",
+    "Güzel bir paslaşma, tehlikeli bir atak geliyor...",
+    "Defans araya girerek topu uzaklaştırdı.",
+    "Kaleci harika bir kurtarışla gole izin vermedi!"
+  ];
+
+  if(matchInterval) clearInterval(matchInterval);
+
+  matchInterval = setInterval(() => {
+    minute += 10;
+    if(minute > 90) minute = 90;
+    document.getElementById('matchMinute').innerText = minute + "'";
+
+    if(Math.random() > 0.6) {
+      if(Math.random() > 0.4) {
+        homeScore++;
+        document.getElementById('homeGoals').innerText = homeScore;
+        document.getElementById('matchCommentary').innerText = `⚽ GOOOLL! Pelitlibağ FC skoru değiştiriyor! (${minute}')`;
+      } else {
+        awayScore++;
+        document.getElementById('awayGoals').innerText = awayScore;
+        document.getElementById('matchCommentary').innerText = `❌ Rakip takım golü buldu. (${minute}')`;
+      }
+    } else {
+      const randomComm = commentaries[Math.floor(Math.random() * commentaries.length)];
+      document.getElementById('matchCommentary').innerText = `${randomComm} (${minute}')`;
+    }
+
+    if(minute === 90) {
+      clearInterval(matchInterval);
+      document.getElementById('matchCommentary').innerText += ` Maç sona erdi! Sonuç: Pelitlibağ FC ${homeScore} - ${awayScore} Rakip FK`;
+      document.getElementById('closeMatchBtn').style.display = 'block';
+    }
+  }, 1500);
+}
+
+function closeMatchModal() {
+  document.getElementById('matchModal').style.display = 'none';
+  if(matchInterval) clearInterval(matchInterval);
 }
 
 function filterData() {
@@ -243,11 +337,10 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById('searchInput').addEventListener('input', filterData);
   document.getElementById('posFilter').addEventListener('change', filterData);
 
-  // Her saniye arayüzdeki zamanlayıcıları güncelle
   setInterval(() => {
     if (document.getElementById('tab-training').classList.contains('active')) {
       renderTraining();
     }
   }, 1000);
 });
-    
+  
