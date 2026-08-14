@@ -1,5 +1,5 @@
-// OYUNCU VERİ TABANI
-const players = [
+// OYUNCU VERİ TABANI (localStorage Desteği ile)
+const defaultPlayers = [
   { id: "player_001", name: "Ömür Faik Köse", pos: "ST", ovr: 76, energy: 100, xp: 0, level: 1, playstyle: "Rapid+", stats: { PAC: 90, SHO: 78, PAS: 70, DRI: 76, DEF: 74, PHY: 82 } },
   { id: "player_002", name: "Şaban Efe Turgut", pos: "ST", ovr: 75, energy: 100, xp: 0, level: 1, playstyle: "Power Shot+", stats: { PAC: 79, SHO: 82, PAS: 68, DRI: 74, DEF: 40, PHY: 64 } },
   { id: "player_003", name: "Kaan Berk Kılavuz", pos: "RB", ovr: 74, energy: 100, xp: 0, level: 1, playstyle: "Relentless+", stats: { PAC: 84, SHO: 40, PAS: 64, DRI: 55, DEF: 72, PHY: 80 } },
@@ -13,6 +13,19 @@ const players = [
   { id: "player_011", name: "Bekir Akdoğan", pos: "ST", ovr: 65, energy: 100, xp: 0, level: 1, playstyle: "Finesse Shot+", stats: { PAC: 52, SHO: 82, PAS: 48, DRI: 62, DEF: 32, PHY: 42 } },
   { id: "player_012", name: "Kağan Bozkurt", pos: "CAM", ovr: 72, energy: 100, xp: 0, level: 1, playstyle: "Incisive Pass+", stats: { PAC: 72, SHO: 68, PAS: 75, DRI: 74, DEF: 50, PHY: 66 } }
 ];
+
+// Hafızadan verileri yükle, yoksa varsayılanları kullan
+let players = JSON.parse(localStorage.getItem('pelitlibag_players')) || defaultPlayers;
+
+// Verileri tarayıcı hafızasına kaydetme fonksiyonu
+function savePlayers() {
+  localStorage.setItem('pelitlibag_players', JSON.stringify(players));
+}
+
+// Oyuncuları reytinge (OVR) göre büyükten küçüğe sıralayan yardımcı fonksiyon
+function getSortedPlayers(data) {
+  return [...data].sort((a, b) => b.ovr - a.ovr);
+}
 
 // SEKME GEÇİŞİ
 function initTabs() {
@@ -33,13 +46,15 @@ function initTabs() {
   });
 }
 
-// 1. KARTLARI ÇİZME
+// 1. KARTLARI ÇİZME (Reyting Sıralamalı)
 function renderCards(data) {
   const container = document.getElementById('cardContainer');
   if (!container) return;
   container.innerHTML = '';
   
-  data.forEach(p => {
+  const sortedData = getSortedPlayers(data);
+
+  sortedData.forEach(p => {
     const statsHtml = Object.entries(p.stats)
       .map(([lbl, val]) => `<div class="stat-item"><span class="stat-val">${val}</span><span class="stat-lbl">${lbl}</span></div>`)
       .join('');
@@ -63,13 +78,15 @@ function renderCards(data) {
   });
 }
 
-// 2. ANTRENMAN EKRANI ÇİZME
+// 2. ANTRENMAN EKRANI ÇİZME (Reyting Sıralamalı)
 function renderTraining() {
   const container = document.getElementById('trainingContainer');
   if (!container) return;
   container.innerHTML = '';
 
-  players.forEach(p => {
+  const sortedPlayers = getSortedPlayers(players);
+
+  sortedPlayers.forEach(p => {
     const isEnergyLow = p.energy < 25;
 
     const statBtns = Object.keys(p.stats).map(statKey => `
@@ -119,8 +136,9 @@ function trainPlayer(playerId, statKey) {
       p.ovr += 1;
     }
 
+    savePlayers();
     renderTraining();
-    renderCards(players);
+    filterData();
   }
 }
 
@@ -131,6 +149,7 @@ function restPlayer(playerId) {
 
   if (p.energy < 100) {
     p.energy = Math.min(100, p.energy + 30);
+    savePlayers();
     renderTraining();
   }
 }
@@ -158,4 +177,4 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById('searchInput').addEventListener('input', filterData);
   document.getElementById('posFilter').addEventListener('change', filterData);
 });
-   
+  
