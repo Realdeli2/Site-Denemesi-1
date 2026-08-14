@@ -12,7 +12,6 @@ const masterPlayerPool = [
   { id: "p_10", name: "Ahoora", pos: "GK", ovr: 69, playstyle: "Cross Claimer+", stats: { DIV: 54, HAN: 68, KIC: 67, REF: 68, SPD: 60, POS: 71 } },
   { id: "p_11", name: "Azad Yaşar", pos: "GK", ovr: 66, playstyle: "Far Throw+", stats: { DIV: 60, HAN: 72, KIC: 58, REF: 65, SPD: 58, POS: 64 } },
   { id: "p_12", name: "Bekir Akdoğan", pos: "ST", ovr: 65, playstyle: "Finesse Shot+", stats: { PAC: 52, SHO: 82, PAS: 48, DRI: 62, DEF: 32, PHY: 42 } },
-  // Eklenen 33 yeni oyuncu (45'e tamamlandı)
   { id: "p_13", name: "Emre Can", pos: "CAM", ovr: 68, playstyle: "Playmaker", stats: { PAC: 68, SHO: 60, PAS: 70, DRI: 70, DEF: 45, PHY: 60 } },
   { id: "p_14", name: "Burak Yılmaz", pos: "ST", ovr: 67, playstyle: "Poacher", stats: { PAC: 70, SHO: 71, PAS: 50, DRI: 63, DEF: 30, PHY: 65 } },
   { id: "p_15", name: "Ahmet Demir", pos: "CB", ovr: 67, playstyle: "Stopper", stats: { PAC: 58, SHO: 40, PAS: 52, DRI: 50, DEF: 70, PHY: 74 } },
@@ -48,7 +47,6 @@ const masterPlayerPool = [
   { id: "p_45", name: "Umut Nayır", pos: "ST", ovr: 55, playstyle: "TargetMan", stats: { PAC: 58, SHO: 58, PAS: 42, DRI: 50, DEF: 30, PHY: 65 } }
 ];
 
-// OYUNCU VERİLERİ VE STATE
 let userData = JSON.parse(localStorage.getItem('pelitlibag_user')) || null;
 let players = JSON.parse(localStorage.getItem('pelitlibag_players')) || [];
 let activeTrainings = JSON.parse(localStorage.getItem('pelitlibag_trainings')) || {};
@@ -74,8 +72,13 @@ function saveAll() {
 
 // HESAP OLUŞTURMA
 function createAccount() {
-  const manager = document.getElementById('managerNameInput').value.trim();
-  const team = document.getElementById('teamNameInput').value.trim();
+  const managerInput = document.getElementById('managerNameInput');
+  const teamInput = document.getElementById('teamNameInput');
+
+  if (!managerInput || !teamInput) return;
+
+  const manager = managerInput.value.trim();
+  const team = teamInput.value.trim();
 
   if(!manager || !team) {
     alert("Lütfen menajer adı ve takım adını giriniz!");
@@ -84,7 +87,6 @@ function createAccount() {
 
   userData = { managerName: manager, teamName: team, coins: 600 };
   
-  // Başlangıç olarak havuzdan ilk 12 oyuncuyu hediye verelim ki kadro kurabilsin
   players = masterPlayerPool.slice(0, 12).map(p => ({
     ...p,
     energy: 100,
@@ -95,17 +97,29 @@ function createAccount() {
     injured: false
   }));
 
+  // Lig tablosundaki varsayılan ismi kullanıcının takımıyla güncelle
+  leagueTable[0].name = team;
+
   saveAll();
   initGameSession();
 }
 
 function initGameSession() {
   if(!userData) return;
-  document.getElementById('authModal').style.display = 'none';
-  document.getElementById('mainHeader').style.display = 'block';
-  document.getElementById('displayManager').innerText = `Menajer: ${userData.managerName}`;
-  document.getElementById('displayTeamName').innerText = userData.teamName.toUpperCase();
-  document.getElementById('displayCoins').innerText = userData.coins;
+  
+  const authModal = document.getElementById('authModal');
+  const mainHeader = document.getElementById('mainHeader');
+  
+  if(authModal) authModal.style.display = 'none';
+  if(mainHeader) mainHeader.style.display = 'block';
+
+  const mNameElem = document.getElementById('displayManager');
+  const tNameElem = document.getElementById('displayTeamName');
+  const cCoinsElem = document.getElementById('displayCoins');
+
+  if(mNameElem) mNameElem.innerText = `Menajer: ${userData.managerName}`;
+  if(tNameElem) tNameElem.innerText = userData.teamName.toUpperCase();
+  if(cCoinsElem) cCoinsElem.innerText = userData.coins;
 
   renderCards(players);
   renderTraining();
@@ -118,6 +132,18 @@ document.addEventListener("DOMContentLoaded", () => {
   if(userData) {
     initGameSession();
   }
+
+  const sInput = document.getElementById('searchInput');
+  const pFilter = document.getElementById('posFilter');
+  if(sInput) sInput.addEventListener('input', filterData);
+  if(pFilter) pFilter.addEventListener('change', filterData);
+
+  setInterval(() => {
+    const trainingTab = document.getElementById('tab-training');
+    if (trainingTab && trainingTab.classList.contains('active')) {
+      renderTraining();
+    }
+  }, 1000);
 });
 
 function getSortedPlayers(data) {
@@ -134,7 +160,8 @@ function initTabs() {
       document.querySelectorAll('.tab-content').forEach(section => {
         section.classList.remove('active');
       });
-      document.getElementById(`tab-${targetTab}`).classList.add('active');
+      const targetSec = document.getElementById(`tab-${targetTab}`);
+      if(targetSec) targetSec.classList.add('active');
       
       if(targetTab === 'lineup') {
         renderLineup();
@@ -172,7 +199,6 @@ function renderCards(data) {
   });
 }
 
-// 50 KARTLIK PAKET AÇMA SİSTEMİ
 function openPlayerPack() {
   if(userData.coins < 100) {
     alert("Yetersiz Coin! Paket açmak için 100 coin gerekiyor.");
@@ -180,16 +206,15 @@ function openPlayerPack() {
   }
 
   userData.coins -= 100;
-  document.getElementById('displayCoins').innerText = userData.coins;
+  const coinElem = document.getElementById('displayCoins');
+  if(coinElem) coinElem.innerText = userData.coins;
 
-  // Paket içerisinden 50 rastgele kart üretimi (veya havuzdan çekim)
   const packResults = [];
   for(let i = 0; i < 50; i++) {
     const randomTemplate = masterPlayerPool[Math.floor(Math.random() * masterPlayerPool.length)];
-    // Benzersiz ID ile klonla
     const newCard = {
       ...randomTemplate,
-      id: 'pack_' + Math.random().toString(36.substring(2, 9)),
+      id: 'pack_' + Math.random().toString(36).substring(2, 9),
       energy: 100,
       xp: 0,
       level: 1,
@@ -206,9 +231,9 @@ function openPlayerPack() {
   renderTraining();
 
   const resContainer = document.getElementById('packResultContainer');
+  if(!resContainer) return;
   resContainer.innerHTML = `<h3 style="grid-column: 1/-1; color: #e5b350; text-align:center;">🎁 Paket Açıldı! 50 Yeni Kart Kadroya Eklendi (En iyiler aşağıda)</h3>`;
   
-  // En iyi çıkan ilk 8 kartı göster
   getSortedPlayers(packResults).slice(0, 8).forEach(p => {
     const statsHtml = Object.entries(p.stats)
       .map(([lbl, val]) => `<div class="stat-item"><span class="stat-val">${val}</span><span class="stat-lbl">${lbl}</span></div>`)
@@ -227,7 +252,6 @@ function openPlayerPack() {
   });
 }
 
-// İLK 4, KİMYA VE KAPTANLIK SEÇİMİ
 function renderLineup() {
   const container = document.getElementById('lineupContainer');
   if (!container) return;
@@ -271,11 +295,16 @@ function renderLineup() {
 }
 
 function updateLineup() {
-  currentLineup.st = document.getElementById('lineup_st').value;
-  currentLineup.mid = document.getElementById('lineup_mid').value;
-  currentLineup.def = document.getElementById('lineup_def').value;
-  currentLineup.gk = document.getElementById('lineup_gk').value;
+  const stElem = document.getElementById('lineup_st');
+  const midElem = document.getElementById('lineup_mid');
+  const defElem = document.getElementById('lineup_def');
+  const gkElem = document.getElementById('lineup_gk');
   const capElem = document.getElementById('lineup_captain');
+
+  if(stElem) currentLineup.st = stElem.value;
+  if(midElem) currentLineup.mid = midElem.value;
+  if(defElem) currentLineup.def = defElem.value;
+  if(gkElem) currentLineup.gk = gkElem.value;
   if(capElem) currentLineup.captain = capElem.value;
 
   saveAll();
@@ -284,6 +313,7 @@ function updateLineup() {
 
 function calcChemistry() {
   const chemDisplay = document.getElementById('chemistryDisplay');
+  if(!chemDisplay) return;
   const { st, mid, def, gk } = currentLineup;
   
   if(!st || !mid || !def || !gk) {
@@ -298,14 +328,15 @@ function calcChemistry() {
 
   let chem = 75;
   [pSt, pMid, pDef, pGk].forEach(p => {
-    const avg = Object.values(p.stats).reduce((a,b)=>a+b,0) / Object.values(p.stats).length;
-    if(avg > 65) chem += 6;
+    if(p && p.stats) {
+      const avg = Object.values(p.stats).reduce((a,b)=>a+b,0) / Object.values(p.stats).length;
+      if(avg > 65) chem += 6;
+    }
   });
   chem = Math.min(100, chem);
   chemDisplay.innerHTML = `⚡ Takım Kimyası: %${chem} (Kadro Tamamlandı!)`;
 }
 
-// ANTRENMAN VE SAKATLIK YÖNETİMİ
 const trainingCategories = [
   { id: "st", title: "🎯 Forvet Antrenmanları", drills: [{ key: "SHO", name: "Şut Çalışması" }, { key: "PAC", name: "Hız Antrenmanı" }, { key: "DRI", name: "Bitiricilik / Dribbling" }] },
   { id: "cb", title: "🛡️ Defans Antrenmanları", drills: [{ key: "DEF", name: "Kafa Çalışması / Pozisyon" }, { key: "PHY", name: "Güç ve Müdahale" }] },
@@ -342,30 +373,4 @@ function renderTraining() {
       }
 
       return `
-        <div class="sub-train-item">
-          <span class="sub-train-title">${drill.name} (+1 ${drill.key})</span>
-          <div id="control_${trainKey}">${controlHtml}</div>
-        </div>
-      `;
-    }).join('');
-
-    const card = document.createElement('div');
-    card.className = 'training-card';
-    card.innerHTML = `<div class="t-card-header">${cat.title}</div>${drillsHtml}`;
-    container.appendChild(card);
-  });
-
-  renderRestCard();
-}
-
-function renderRestCard() {
-  const container = document.getElementById('trainingContainer');
-  const sorted = getSortedPlayers(players);
-  const now = Date.now();
-
-  const restRows = sorted.map(p => {
-    const lastTime = lastRestTimes[p.id] || 0;
-    const diff = now - lastTime;
-    const cooldown = 60 * 60 * 1000; // 1 saat
-    const canRest = diff >= cooldown;
-    const rema
+        <div c
