@@ -1,0 +1,149 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  background-color: #0b0e14;
+  color: #fff;
+  padding: 20px;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+header h1 {
+  font-size: 2.5rem;
+  color: #e5b350;
+  letter-spacing: 2px;
+  margin-bottom: 15px;
+  text-transform: uppercase;
+}
+
+.controls {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.controls input, .controls select {
+  padding: 10px 15px;
+  border-radius: 8px;
+  border: 1px solid #333;
+  background-color: #1a1f29;
+  color: #fff;
+  font-size: 1rem;
+  outline: none;
+}
+
+.card-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 25px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* FC 26 KART TASARIMI */
+.fc-card {
+  background: linear-gradient(135deg, #f3e098 0%, #b8860b 50%, #4a3500 100%);
+  border-radius: 16px;
+  padding: 3px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.fc-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 30px rgba(229, 179, 80, 0.3);
+}
+
+.card-inner {
+  background: #141824;
+  border-radius: 13px;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  align-items: center;
+  border-bottom: 1px solid #2a3142;
+  padding-bottom: 10px;
+  margin-bottom: 15px;
+}
+
+.rating-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.ovr {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #e5b350;
+  line-height: 1;
+}
+
+.pos {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #aaa;
+}
+
+.player-name {
+  font-size: 1.2rem;
+  font-weight: 700;
+  text-align: center;
+  color: #fff;
+  margin-bottom: 15px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 15px;
+  width: 100%;
+  background: #0d1017;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.stat-item {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+}
+
+.stat-val {
+  font-weight: 700;
+  color: #e5b350;
+}
+
+.stat-lbl {
+  color: #888;
+}
+
+.playstyle {
+  margin-top: 10px;
+  font-size: 0.8rem;
+  background: rgba(229, 179, 80, 0.15);
+  color: #e5b350;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-weight: 600;
+    }
