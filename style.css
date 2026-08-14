@@ -16,12 +16,36 @@ header {
   margin-bottom: 25px;
 }
 
+.header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto 15px auto;
+  padding: 0 10px;
+}
+
 header h1 {
-  font-size: 2.2rem;
+  font-size: 2rem;
   color: #e5b350;
   letter-spacing: 2px;
-  margin-bottom: 15px;
   text-transform: uppercase;
+}
+
+.user-stats-bar {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.coin-badge {
+  background: #1a1f29;
+  border: 1px solid #e5b350;
+  padding: 6px 12px;
+  border-radius: 8px;
+  color: #e5b350;
 }
 
 .main-nav {
@@ -36,7 +60,7 @@ header h1 {
   background: #1a1f29;
   color: #fff;
   border: 1px solid #333;
-  padding: 12px 20px;
+  padding: 10px 16px;
   border-radius: 8px;
   cursor: pointer;
   font-weight: 700;
@@ -126,11 +150,17 @@ header h1 {
   font-weight: 700;
   text-align: center;
   color: #fff;
-  margin-bottom: 10px;
+  margin-bottom: 6px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   width: 100%;
+}
+
+.player-sub-info {
+  font-size: 0.75rem;
+  color: #aaa;
+  margin-bottom: 8px;
 }
 
 .stats-grid {
@@ -168,7 +198,7 @@ header h1 {
   font-weight: 600;
 }
 
-/* İLK 4 SEÇİM VE KİMYA GÖRÜNÜMÜ */
+/* İLK 4 GÖRÜNÜMÜ */
 .lineup-field {
   max-width: 600px;
   margin: 0 auto;
@@ -180,13 +210,6 @@ header h1 {
   flex-direction: column;
   gap: 15px;
   align-items: center;
-}
-
-.lineup-row {
-  display: flex;
-  justify-content: center;
-  gap: 15px;
-  width: 100%;
 }
 
 .lineup-select {
@@ -355,4 +378,4 @@ header h1 {
   color: #ddd;
   text-align: left;
   border: 1px solid #2a3142;
-  }
+}
