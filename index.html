@@ -22,6 +22,36 @@
       </select>
     </div>
   </header>
+  <nav class="main-nav">
+  <button class="nav-btn active" onclick="switchTab('cards')">🃏 Bütün Kartlar</button>
+  <button class="nav-btn" onclick="switchTab('squad')">⚽ Kadro Kurma (11)</button>
+
+  <button class="nav-btn" onclick="switchTab('training')">🏋️ Antrenman Tesisleri</button>
+</nav>
+
+<!-- SEKME 1: KARTLAR & KİLİTLİ OYUNCULAR -->
+<section id="tab-cards" class="tab-content active">
+  <div class="card-container" id="cardContainer"></div>
+</section>
+
+
+<section id="tab-squad" class="tab-content">
+  <div class="pitch-container">
+    <div class="pitch">
+      
+      <div class="pitch-slot" data-pos="ST">ST Seç</div>
+      <div class="pitch-slot" data-pos="CAM">CAM Seç</div>
+      <div class="pitch-slot" data-pos="CB">CB Seç</div>
+      <div class="pitch-slot" data-pos="GK">GK Seç</div>
+    </div>
+  </div>
+</section>
+
+
+<section id="tab-training" class="tab-content">
+  <div id="trainingContainer" class="training-list"></div>
+</section>
+  
 
   <main class="card-container" id="cardContainer">
     <!-- Kartlar JavaScript ile buraya eklenecek -->
