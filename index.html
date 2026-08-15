@@ -22,7 +22,6 @@
       height: 100vh;
     }
 
-    /* Başlangıç Ekranı */
     #startLockScreen {
       position: fixed;
       top: 0; left: 0; width: 100vw; height: 100vh;
@@ -112,9 +111,11 @@
       background: #11161d;
       border-bottom: 1px solid var(--border-color);
       height: 45px;
+      overflow-x: auto;
     }
     .nav-btn {
       flex: 1;
+      min-width: 100px;
       background: none;
       border: none;
       color: #8b949e;
@@ -150,6 +151,7 @@
       padding: 12px;
       text-align: center;
       box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      position: relative;
     }
     .rating-box { font-size: 1.3rem; font-weight: 900; color: var(--accent-color); }
     .player-name { font-size: 0.95rem; font-weight: bold; margin: 8px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -165,13 +167,12 @@
       padding: 20px;
       text-align: center;
       max-width: 500px;
-      margin: 40px auto;
+      margin: 20px auto;
     }
   </style>
 </head>
-<body>
+<body id="appBody" style="background-image: none; background-size: cover; background-position: center;">
 
-  <!-- İlk Açılış Ekranı (Butona basınca direkt tam ekran ve oyun açılır) -->
   <div id="startLockScreen">
     <div class="start-box">
       <h1>Pelitlibağ FK Kariyer</h1>
@@ -180,7 +181,6 @@
     </div>
   </div>
 
-  <!-- Kayıt / Giriş Modalı -->
   <div id="authModal" class="modal-overlay" style="display: none;">
     <div class="auth-box">
       <h2>Menajer Profili</h2>
@@ -191,7 +191,6 @@
     </div>
   </div>
 
-  <!-- Ana Oyun Arayüzü -->
   <div id="gameContainer">
     <header id="mainHeader">
       <div class="header-info">
@@ -207,62 +206,56 @@
       <button class="nav-btn active" data-tab="squad">Kadro</button>
       <button class="nav-btn" data-tab="market">Transfer Market</button>
       <button class="nav-btn" data-tab="training">Antrenman</button>
-      <button class="nav-btn" data-tab="lineup">İlk 11 & Maç</button>
-      <button class="nav-btn" data-tab="league">Lig & Geçmiş</button>
+      <button class="nav-btn" data-tab="lineup">İlk 11</button>
+      <button class="nav-btn" data-tab="league">Lig</button>
+      <button class="nav-btn" data-tab="profile">Profil</button>
+      <button class="nav-btn" data-tab="settings">Ayarlar</button>
     </nav>
 
-    <div class="content-area">
+    <div class="content-area" id="swipeArea">
+      <!-- 1. KADRO -->
       <div id="tab-squad" class="tab-content active">
         <div style="display: flex; justify-content: space-between; margin-bottom: 15px; align-items: center;">
           <input type="text" id="searchInput" placeholder="Oyuncu ara..." style="padding: 8px; background: var(--panel-bg); border: 1px solid var(--border-color); color: #fff; border-radius: 6px; width: 250px;">
-          <select id="posFilter" style="padding: 8px; background: var(--panel-bg); border: 1px solid var(--border-color); color: #fff; border-radius: 6px;">
-            <option value="ALL">Tüm Pozisyonlar</option>
-            <option value="ST">Forvet (ST)</option>
-            <option value="CAM">Orta Saha (CAM)</option>
-            <option value="CB">Stoper (CB)</option>
-            <option value="RB">Sağ Bek (RB)</option>
-            <option value="GK">Kaleci (GK)</option>
-          </select>
         </div>
         <div id="cardContainer" class="card-grid"></div>
       </div>
 
+      <!-- 2. MARKET -->
       <div id="tab-market" class="tab-content">
         <div class="match-action-box">
           <h3 style="color: var(--accent-color); margin-bottom: 10px;">🎁 Oyuncu Paketleri & Transfer</h3>
-          <p style="font-size: 0.9rem; color: #8b949e; margin-bottom: 20px;">100 Coin karşılığında paket açarak kadronu güçlendir ve yeni yıldızlar keşfet!</p>
+          <p style="font-size: 0.9rem; color: #8b949e; margin-bottom: 20px;">100 Coin karşılığında özel oyuncu havuzundan paket aç!</p>
           <button class="btn-main" onclick="openPlayerPack()">100 Coin ile Paket Aç</button>
         </div>
         <div id="packResultContainer" class="card-grid" style="margin-top: 20px;"></div>
       </div>
 
+      <!-- 3. ANTRENMAN -->
       <div id="tab-training" class="tab-content">
-        <div id="trainingContainer" class="card-grid"></div>
+        <div id="trainingContainer" class="card-grid" style="grid-template-columns: 1fr; max-width: 500px; margin: 0 auto;"></div>
       </div>
 
+      <!-- 4. İLK 11 -->
       <div id="tab-lineup" class="tab-content">
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
           <div style="background: var(--panel-bg); padding: 20px; border-radius: 10px; border: 1px solid var(--border-color);">
-            <h3 style="color: var(--accent-color); margin-bottom: 15px;">📋 Maç Kadrosu Kurulumu</h3>
-            <div id="lineupContainer" style="display: flex; flex-direction: column; gap: 12px;"></div>
+            <h3 style="color: var(--accent-color); margin-bottom: 15px;">📋 11 Kişilik İlk 11 Kurulumu</h3>
+            <div id="lineupContainer" style="display: flex; flex-direction: column; gap: 10px;"></div>
             <div id="chemistryDisplay" style="margin-top: 15px; font-weight: bold; color: var(--accent-color);"></div>
           </div>
           <div style="background: var(--panel-bg); padding: 20px; border-radius: 10px; border: 1px solid var(--border-color); text-align: center; display: flex; flex-direction: column; justify-content: center;">
             <h3 style="color: var(--accent-color); margin-bottom: 15px;">⚽ Maç Günü</h3>
-            <select id="matchTactics" style="padding: 10px; background: #0f141d; border: 1px solid var(--border-color); color: #fff; border-radius: 6px; margin-bottom: 15px; width: 100%;">
-              <option value="balanced">Dengeli Taktik</option>
-              <option value="attack">Hücum Futbolu</option>
-              <option value="defense">Katı Savunma</option>
-            </select>
-            <button class="btn-main" onclick="startMatch()">Maçı Başlat</button>
+            <button class="btn-main" onclick="startMatch()">Maçı Başlat (Günde 1 Hak)</button>
           </div>
         </div>
       </div>
 
+      <!-- 5. LİG -->
       <div id="tab-league" class="tab-content">
         <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px;">
           <div style="background: var(--panel-bg); padding: 20px; border-radius: 10px; border: 1px solid var(--border-color);">
-            <h3 style="color: var(--accent-color); margin-bottom: 15px;">🏆 Puan Durumu</h3>
+            <h3 style="color: var(--accent-color); margin-bottom: 15px;">🏆 Puan Durumu & Arkadaşlar</h3>
             <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
               <thead>
                 <tr style="border-bottom: 2px solid var(--border-color); color: #8b949e;">
@@ -284,34 +277,69 @@
           </div>
         </div>
       </div>
+
+      <!-- 6. PROFİL -->
+      <div id="tab-profile" class="tab-content">
+        <div class="match-action-box">
+          <h3 style="color: var(--accent-color); margin-bottom: 15px;">👤 Menajer Profili</h3>
+          <div style="margin-bottom: 15px;">
+            <img id="profileAvatar" src="" alt="Profil Fotoğrafı" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent-color); display: none; margin: 0 auto 10px auto;">
+            <input type="file" id="avatarUpload" accept="image/*" onchange="uploadProfilePhoto(event)" style="margin-bottom: 10px; color: #fff;">
+          </div>
+          <p><b>Menajer:</b> <span id="profileManagerName">-</span></p>
+          <p><b>Takım:</b> <span id="profileTeamName">-</span></p>
+          <p><b>Toplam Coin:</b> <span id="profileCoins">-</span></p>
+        </div>
+      </div>
+
+      <!-- 7. AYARLAR -->
+      <div id="tab-settings" class="tab-content">
+        <div class="match-action-box">
+          <h3 style="color: var(--accent-color); margin-bottom: 15px;">⚙️ Oyun Ayarları</h3>
+          <div style="margin-bottom: 20px; text-align: left;">
+            <label style="display:block; margin-bottom: 8px; color: #8b949e;">Arka Plan Resmi Seç (URL veya Dosya):</label>
+            <input type="text" id="bgUrlInput" class="auth-input" placeholder="Görsel URL yapıştırın..." style="margin-bottom: 8px;">
+            <button class="btn-main" onclick="changeBackground()">Arka Planı Uygula</button>
+          </div>
+          <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 20px 0;">
+          <button onclick="dangerDeleteAccount()" style="background: #da3633; color: #fff; width: 100%; padding: 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer;">Hesabı ve Tüm Verileri Sil</button>
+        </div>
+      </div>
     </div>
   </div>
 
+  <!-- Maç Simülasyonu Modal -->
   <div id="matchModal" class="modal-overlay" style="display: none;">
-    <div class="auth-box" style="width: 500px;">
+    <div class="auth-box" style="width: 550px;">
       <h2 id="matchMinute" style="font-size: 2rem; color: var(--accent-color); margin-bottom: 10px;">0'</h2>
-      <div style="font-size: 1.5rem; font-weight: bold; margin-bottom: 20px;">
-        <span id="homeTeamName">Ev Sahibi</span> <span id="homeGoals">0</span> - <span id="awayGoals">0</span> Rakip FK
+      <div style="font-size: 1.4rem; font-weight: bold; margin-bottom: 15px;">
+        <span id="homeTeamName">Pelitlibağ FK</span> <span id="homeGoals">0</span> - <span id="awayGoals">0</span> <span id="awayTeamName">Rakip</span>
       </div>
       <p id="matchCommentary" style="color: #8b949e; min-height: 50px; margin-bottom: 20px; font-size: 0.95rem;">Maç Başlıyor...</p>
+      
+      <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+        <button class="btn-main" onclick="openLiveSquadStats()" style="background: #238636; color: #fff;">Kadromu Gözetle (İstatistikler)</button>
+      </div>
+
       <button id="closeMatchBtn" class="btn-main" onclick="closeMatchModal()" style="display: none;">Maçı Tamamla</button>
+    </div>
+  </div>
+
+  <!-- Canlı Maç İstatistik / Kadro Gözetleme Modal -->
+  <div id="liveStatsModal" class="modal-overlay" style="display: none;">
+    <div class="auth-box" style="width: 550px; max-height: 80vh; overflow-y: auto;">
+      <h3 style="color: var(--accent-color); margin-bottom: 15px;">📊 Canlı Oyuncu Performansları</h3>
+      <div id="liveStatsContainer" style="display: flex; flex-direction: column; gap: 8px; text-align: left; margin-bottom: 20px;"></div>
+      <button class="btn-main" onclick="closeLiveStatsModal()">Geri Dön</button>
     </div>
   </div>
 
   <script>
     function launchGameExperience() {
-      // Tam ekran isteği (güvenli bir kullanıcı etkileşimi içinde tetiklenir)
       const elem = document.documentElement;
-      if (elem.requestFullscreen) {
-        elem.requestFullscreen().catch(() => {});
-      } else if (elem.webkitRequestFullscreen) {
-        elem.webkitRequestFullscreen();
-      }
-
-      // Başlangıç ekranını gizle
+      if (elem.requestFullscreen) { elem.requestFullscreen().catch(() => {}); }
       document.getElementById('startLockScreen').style.display = 'none';
 
-      // Eğer kayıt varsa direkt oyunu aç, yoksa isim giriş ekranını aç
       const savedUser = localStorage.getItem('pelitlibag_user');
       if (savedUser) {
         document.getElementById('gameContainer').style.display = 'flex';
@@ -323,5 +351,5 @@
   </script>
   <script src="script.js"></script>
 </body>
-  </html>
-  
+                                                                      </html>
+                                                                      
